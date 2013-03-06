@@ -14,6 +14,21 @@ describe Ledger do
     @ledger = Fabricate(:ledger)
   end
 
+  let(:projected_transactions) do
+    values = [55, 11]
+    values.map do |value|
+      Fabricate(:transaction, ledger: @ledger, value_in_cents: value,
+                 date: DateTime.now + 1.days)
+    end
+  end
+
+  let(:current_transactions) do
+    values = [100, 500, 1000, 2000, -50]
+    values.map do |value|
+      Fabricate(:transaction, ledger: @ledger, value_in_cents: value)
+    end
+  end
+
   it "has a working factory" do
     @ledger.should be_a Ledger
   end
@@ -27,28 +42,13 @@ describe Ledger do
   end
 
   it "calculates its current balance" do
-    values = [100, 500, 1000, 2000, -50]
-    values.each do |value|
-      Fabricate(:transaction, ledger: @ledger, value_in_cents: value)
-    end
-    projected_values = [55, 11]
-    projected_values.each do |value|
-      Fabricate(:transaction, ledger: @ledger, value_in_cents: value,
-                 date: DateTime.now + 1.days)
-    end
+    values = current_transactions.map(&:value_in_cents)
     @ledger.current_balance.should == (values.inject(&:+) / 100.0)
   end
 
   it "calculates is projected balance" do
-    values = [100, 500, 1000, 2000, -50]
-    values.each do |value|
-      Fabricate(:transaction, ledger: @ledger, value_in_cents: value)
-    end
-    projected_values = [55, 11]
-    projected_values.each do |value|
-      Fabricate(:transaction, ledger: @ledger, value_in_cents: value,
-                 date: DateTime.now + 1.days)
-    end
+    values = current_transactions.map(&:value_in_cents)
+    projected_values = projected_transactions.map(&:value_in_cents)
     all_values = values + projected_values
     @ledger.projected_balance.should == (all_values.inject(&:+) / 100.0)
   end
