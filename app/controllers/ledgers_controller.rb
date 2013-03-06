@@ -1,0 +1,2 @@
+class LedgersController < ApplicationController
+end
