@@ -2,23 +2,11 @@ class Ledger < ActiveRecord::Base
   attr_accessible :title
   has_many :transactions
 
-  def opening_balance
-    transactions.first.value
-  end
-
-  def opening_balance=(amount)
-    if transactions.any?
-      transactions.first.update_attributes(value: amount)
-    else
-      transactions.create(title: "Opening Balance", value: amount)
-    end
-  end
-
   def current_balance
-    transactions.current.sum('value')
+    transactions.current.sum('value_in_cents') / 100.0
   end
 
   def projected_balance(through = nil)
-    current_balance + transactions.projected(through).sum('value')
+    current_balance + transactions.projected(through).sum('value_in_cents') / 100.0
   end
 end
