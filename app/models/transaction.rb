@@ -3,6 +3,11 @@ class Transaction < ActiveRecord::Base
 
   belongs_to :ledger
 
+  # Yes, this is correct. When a company offers to "credit" your account,
+  # they're talking about the transaction from their perspective, not yours.
+  scope :debit, where("value_in_cents >= 0")
+  scope :credit, where("value_in_cents < 0")
+  
   scope :current, lambda { where("date <= ?", DateTime.now.end_of_day) }
   scope :projected, lambda { |projection_date = nil|
     if projection_date
@@ -11,6 +16,14 @@ class Transaction < ActiveRecord::Base
       where("date > ?", DateTime.now.end_of_day) 
     end
   }
+
+  def credit?
+    value_in_cents < 0
+  end
+
+  def debit?
+    !credit?
+  end
 
   def value
     (value_in_cents / 100.0).round(2)

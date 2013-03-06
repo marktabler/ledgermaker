@@ -10,46 +10,44 @@ describe Transaction do
     Timecop.return
   end
 
+  let(:transaction) do
+    @transaction ||= Fabricate(:transaction)
+  end
+
   it "has a working factory" do
-    Fabricate(:transaction).should be_a Transaction
+    transaction.should be_a Transaction
   end
 
   it "translates from value to value_in_cents" do
-    t = Fabricate(:transaction)
-    t.value = 123.45
-    t.value_in_cents.should == 12345
+    transaction.value = 123.45
+    transaction.value_in_cents.should == 12345
   end
 
   it "translates from value_in_cents to value" do
-    t = Fabricate(:transaction)
-    t.value_in_cents = 45678
-    t.value.should == 456.78
+    transaction.value_in_cents = 45678
+    transaction.value.should == 456.78
   end
 
   it "can recur monthly" do
-    t = Fabricate(:transaction)
-    t.recur_monthly(3)
+    transaction.recur_monthly(3)
     Transaction.count.should == 4
-    Transaction.last.ledger_id.should == t.ledger_id
+    Transaction.last.ledger_id.should == transaction.ledger_id
     Transaction.last.date.should == DateTime.parse("August 28, 2012")
   end
 
   it "can recur weekly" do
-    t = Fabricate(:transaction)
-    t.recur_weekly(8)
+    transaction.recur_weekly(8)
     Transaction.count.should == 9
-    Transaction.last.ledger_id.should == t.ledger_id
+    Transaction.last.ledger_id.should == transaction.ledger_id
     Transaction.last.date.should == DateTime.parse("July 23, 2012")
   end
 
   it "can express a simple (formatted) date" do
-    t = Fabricate(:transaction)
-    t.simple_date.should == "05/28/12"
+    transaction.simple_date.should == "05/28/12"
   end
 
   it "can gather all projected transactions" do
-    t = Fabricate(:transaction)
-    t.recur_weekly(5)
+    transaction.recur_weekly(5)
     Transaction.projected.count.should == 5
   end
 
@@ -59,9 +57,20 @@ describe Transaction do
   # The transaction of Today doesn't count - it's current.
   # That leaves 2 transactions to show up.
   it "can gather projected transactions up through a certain date" do
-    t = Fabricate(:transaction)
-    t.recur_weekly(5)
+    transaction.recur_weekly(5)
     fourth_transaction = Transaction.order(:date).all[3]
     Transaction.projected(fourth_transaction.date - 1.day).count.should == 2
+  end
+
+  it "identifies credits" do
+    transaction.value = -50
+    transaction.credit?.should be_true
+    Transaction.credit.count.should == 1
+  end
+
+  it "identifies debits" do
+    transaction.value = 50
+    transaction.debit?.should be_true
+    Transaction.debit.count.should == 1
   end
 end
