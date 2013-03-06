@@ -9,4 +9,5 @@ class Ledger < ActiveRecord::Base
   def projected_balance(through = nil)
     current_balance + transactions.projected(through).sum('value_in_cents') / 100.0
   end
+
 end

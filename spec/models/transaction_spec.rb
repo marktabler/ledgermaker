@@ -49,11 +49,19 @@ describe Transaction do
     Transaction.last.date.should == DateTime.parse("June 25, 2012")
   end
 
+  it "can cancel recurrence" do
+    transaction.recur_weekly(14)
+    middle_transaction = Transaction.order(:date).all[8]
+    middle_transaction.cancel_recurrence
+    Transaction.last.date.should == DateTime.parse("July 16, 2012")
+    Transaction.count.should == 8
+  end
+
   it "can express a simple (formatted) date" do
     transaction.simple_date.should == "05/28/12"
   end
 
-  it "can gather all projected transactions" do
+  it "can scope to all projected transactions" do
     transaction.recur_weekly(5)
     Transaction.projected.count.should == 5
   end
@@ -63,7 +71,7 @@ describe Transaction do
   # The 4th doesn't count because we're cutting off the day before.
   # The transaction of Today doesn't count - it's current.
   # That leaves 2 transactions to show up.
-  it "can gather projected transactions up through a certain date" do
+  it "can scope to projected transactions up through a certain date" do
     transaction.recur_weekly(5)
     fourth_transaction = Transaction.order(:date).all[3]
     Transaction.projected(fourth_transaction.date - 1.day).count.should == 2

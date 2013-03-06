@@ -1,6 +1,6 @@
 class Transaction < ActiveRecord::Base
   attr_accessible :date, :title, :value, :ledger_id, :value_in_cents
-
+  # Validate the uniqueness of a title within a ledger id, not case sensitive
   belongs_to :ledger
 
   # Yes, this is correct. When a company offers to "credit" your account,
@@ -57,13 +57,22 @@ class Transaction < ActiveRecord::Base
     date.strftime("%D")
   end
 
+  def cancel_recurrence
+    forward_transactions = Transaction.where(
+      "title = ? AND date >= ?", self.title, self.date
+      )
+    forward_transactions.destroy_all
+  end
+
   protected
 
   def generate_recurrence(period)
-    Transaction.create!(ledger_id: ledger_id, 
-                        title: title, 
-                        value_in_cents: value_in_cents, 
-                        date: calculated_date(period))
+    Transaction.create!(
+      ledger_id: ledger_id, 
+      title: title, 
+      value_in_cents: value_in_cents, 
+      date: calculated_date(period)
+    )
   end
 
   def calculated_date(period)
