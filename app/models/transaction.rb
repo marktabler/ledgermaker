@@ -4,7 +4,13 @@ class Transaction < ActiveRecord::Base
   belongs_to :ledger
 
   scope :current, lambda { where("date <= ?", DateTime.now.end_of_day) }
-  scope :projected, lambda { where("date > ?", DateTime.now.end_of_day) }
+  scope :projected, lambda { |projection_date|
+    if projection_date
+      where("date > ? and date <= ?", DateTime.now.end_of_day, projection_date) 
+    else
+      where("date > ?", DateTime.now.end_of_day) 
+    end
+  }
 
   def value
     (value_in_cents / 100.0).round(2)

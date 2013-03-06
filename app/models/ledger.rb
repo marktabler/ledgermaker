@@ -8,15 +8,17 @@ class Ledger < ActiveRecord::Base
 
   def opening_balance=(amount)
     if transactions.any?
-      
-    transactions.create
+      transactions.first.update_attributes(value: amount)
+    else
+      transactions.create(title: "Opening Balance", value: amount)
+    end
   end
 
   def current_balance
     transactions.current.sum('value')
   end
 
-  def projected_balance
-    current_balance + transactions.projected.sum('value')
+  def projected_balance(through = nil)
+    current_balance + transactions.projected(through).sum('value')
   end
 end
