@@ -38,11 +38,11 @@ class Transaction < ActiveRecord::Base
     date.strftime("%D")
   end
 
-  private
+  protected
 
   def recur(period = :month)
     calculated_date = (period == :month ? date + 1.month : date + 1.week)
-    Transaction.create(ledger_id: ledger_id, title: title, 
+    Transaction.create!(ledger_id: ledger_id, title: title, 
                        value_in_cents: value_in_cents, date: calculated_date)
   end
 
