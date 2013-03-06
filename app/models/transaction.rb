@@ -4,7 +4,7 @@ class Transaction < ActiveRecord::Base
   belongs_to :ledger
 
   scope :current, lambda { where("date <= ?", DateTime.now.end_of_day) }
-  scope :projected, lambda { |projection_date|
+  scope :projected, lambda { |projection_date = nil|
     if projection_date
       where("date > ? and date <= ?", DateTime.now.end_of_day, projection_date) 
     else
