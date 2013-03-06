@@ -42,6 +42,13 @@ describe Transaction do
     Transaction.last.date.should == DateTime.parse("July 23, 2012")
   end
 
+  it "can recur biweekly" do
+    transaction.recur_biweekly(2)
+    Transaction.count.should == 3
+    Transaction.last.ledger_id.should == transaction.ledger_id
+    Transaction.last.date.should == DateTime.parse("June 25, 2012")
+  end
+
   it "can express a simple (formatted) date" do
     transaction.simple_date.should == "05/28/12"
   end

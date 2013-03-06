@@ -33,18 +33,24 @@ class Transaction < ActiveRecord::Base
     update_attributes(value_in_cents: (amount * 100).to_i)
   end
 
-  def recur_weekly(number_of_weeks = 1)
+  
+  def recur(period, number_of_periods)
     transaction = self
-    number_of_weeks.times do 
-      transaction = transaction.recur(:week)
+    number_of_periods.times do 
+      transaction = transaction.generate_recurrence(period)
     end
   end
 
-  def recur_monthly(number_of_months = 1)
-    transaction = self
-    number_of_months.times do 
-      transaction = transaction.recur(:month)
-    end
+  def recur_biweekly(number_of_periods = 1)
+    recur(:biweek, number_of_periods)
+  end
+
+  def recur_weekly(number_of_periods = 1)
+    recur(:week, number_of_periods)
+  end
+
+  def recur_monthly(number_of_periods = 1)
+    recur(:month, number_of_periods)
   end
 
   def simple_date
@@ -53,10 +59,22 @@ class Transaction < ActiveRecord::Base
 
   protected
 
-  def recur(period = :month)
-    calculated_date = (period == :month ? date + 1.month : date + 1.week)
-    Transaction.create!(ledger_id: ledger_id, title: title, 
-                       value_in_cents: value_in_cents, date: calculated_date)
+  def generate_recurrence(period)
+    Transaction.create!(ledger_id: ledger_id, 
+                        title: title, 
+                        value_in_cents: value_in_cents, 
+                        date: calculated_date(period))
+  end
+
+  def calculated_date(period)
+    case period
+    when :month
+      date + 1.month
+    when :week
+      date + 1.week
+    when :biweek
+      date + 2.weeks
+    end
   end
 
 end
