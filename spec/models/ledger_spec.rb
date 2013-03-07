@@ -25,7 +25,8 @@ describe Ledger do
   let(:current_transactions) do
     values = [100, 500, 1000, 2000, -50]
     values.map do |value|
-      Fabricate(:transaction, ledger: @ledger, value_in_cents: value)
+      Fabricate(:transaction, ledger: @ledger, value_in_cents: value,
+                 date: DateTime.now - 1.days)
     end
   end
 
@@ -51,5 +52,15 @@ describe Ledger do
     projected_values = projected_transactions.map(&:value_in_cents)
     all_values = values + projected_values
     @ledger.projected_balance.should == (all_values.inject(&:+) / 100.0)
+  end
+
+  it "finds unique dates of transactions" do
+    2.times do
+      projected_transactions.map { |t| t.recur(:month, 1) }
+      current_transactions.map { |t| t.recur(:month, 1) }
+    end
+    expected_dates = ["May 27, 2012", "May 29, 2012",
+        "June 27, 2012", "June 29, 2012"].map { |d| Date.parse(d) } 
+    @ledger.transaction_dates.should == expected_dates
   end
 end

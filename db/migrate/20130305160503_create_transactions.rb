@@ -1,7 +1,7 @@
 class CreateTransactions < ActiveRecord::Migration
   def change
     create_table :transactions do |t|
-      t.datetime :date
+      t.date :date
       t.integer :value_in_cents
       t.string :title
       t.integer :ledger_id

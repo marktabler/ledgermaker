@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(:version => 20130305160503) do
   end
 
   create_table "transactions", :force => true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "value_in_cents"
     t.string   "title"
     t.integer  "ledger_id"
