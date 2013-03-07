@@ -9,14 +9,16 @@ class Transaction < ActiveRecord::Base
   scope :debit, where("value_in_cents >= 0")
   scope :credit, where("value_in_cents < 0")
   
-  scope :current, lambda { where("date <= ?", DateTime.now.end_of_day) }
-  scope :projected, lambda { |projection_date = nil|
-    if projection_date
-      where("date > ? and date <= ?", DateTime.now.end_of_day, projection_date) 
-    else
-      where("date > ?", DateTime.now.end_of_day) 
-    end
-  }
+  scope :before, lambda { |target_date| where("date < ?", target_date) }
+  scope :on_or_after, lambda { |target_date| where("date >= ?", target_date) }
+
+  def self.current
+    before(Date.today)
+  end
+
+  def self.projected
+    on_or_after(Date.today)
+  end
 
   def credit?
     value_in_cents < 0

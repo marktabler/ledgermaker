@@ -63,18 +63,18 @@ describe Transaction do
 
   it "can scope to all projected transactions" do
     transaction.recur_weekly(5)
+    transaction.update_attributes(date: Date.today - 3.days)
     Transaction.projected.count.should == 5
   end
 
   # This will generate 6 transactions.
   # The 5th and 6th transactions get cut off by selecting the date of the 4th.
   # The 4th doesn't count because we're cutting off the day before.
-  # The transaction of Today doesn't count - it's current.
-  # That leaves 2 transactions to show up.
+  # That leaves 3 transactions to show up.
   it "can scope to projected transactions up through a certain date" do
     transaction.recur_weekly(5)
     fourth_transaction = Transaction.order(:date).all[3]
-    Transaction.projected(fourth_transaction.date - 1.day).count.should == 2
+    Transaction.on_or_after(fourth_transaction.date - 1.day).count.should == 3
   end
 
   it "identifies credits" do

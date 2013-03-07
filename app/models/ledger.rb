@@ -6,8 +6,13 @@ class Ledger < ActiveRecord::Base
     transactions.current.sum('value_in_cents') / 100.0
   end
 
+  def last_transaction
+    transactions.order(:date).last
+  end
+
   def projected_balance(through = nil)
-    current_balance + transactions.projected(through).sum('value_in_cents') / 100.0
+    through ||= last_transaction.date
+    current_balance + transactions.on_or_after(through).sum('value_in_cents') / 100.0
   end
 
   def balance_by_day(from, through)
