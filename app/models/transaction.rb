@@ -71,6 +71,10 @@ class Transaction < ActiveRecord::Base
     forward_transactions.destroy_all
   end
 
+  def in_subscription
+    Transaction.where(ledger_id: self.ledger_id, title: self.title)
+  end
+
   protected
 
   def generate_recurrence(period)
@@ -80,10 +84,6 @@ class Transaction < ActiveRecord::Base
       value_in_cents: value_in_cents, 
       date: calculated_date(period)
     )
-  end
-
-  def in_subscription
-    Transaction.where(ledger_id: self.ledger_id, title: self.title)
   end
 
   def calculated_date(period)
