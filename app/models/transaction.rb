@@ -82,6 +82,10 @@ class Transaction < ActiveRecord::Base
     )
   end
 
+  def in_subscription
+    Transaction.where(ledger_id: self.ledger_id, title: self.title)
+  end
+
   def calculated_date(period)
     case period
     when :month
