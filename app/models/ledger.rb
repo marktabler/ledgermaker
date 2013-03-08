@@ -1,6 +1,7 @@
 class Ledger < ActiveRecord::Base
   attr_accessible :title
   has_many :transactions
+  validates :title, uniqueness: true
 
   def current_balance
     transactions.current.sum('value_in_cents') / 100.0

@@ -6,9 +6,14 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-puts "Running seeds"
+l = Ledger.find_or_create_by_title(title: "Sample Ledger")
 
-l = Ledger.create(title: "Test Ledger")
+def t(ledger, values)
+  ledger.transactions.create(values)
+end
 
-current = l.transactions.create(value: 123.45, title: "Current: One Twenty-Three and Forty Five Cents", date: DateTime.now - 1.year)
-projected = l.transactions.create(value_in_cents: 4567, title: "Projected: Forty-five and Sixty Seven Cents", date: DateTime.now + 1.year)
+def dom(day_of_month)
+  Date.today.beginning_of_month + (day_of_month - 1).days
+end
+
+internet = t l, title: "Comcast", date: dom(5), value: 88.50
