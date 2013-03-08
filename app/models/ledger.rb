@@ -12,14 +12,20 @@ class Ledger < ActiveRecord::Base
 
   def projected_balance(through = nil)
     through ||= last_transaction.date
-    current_balance + transactions.on_or_after(through).sum('value_in_cents') / 100.0
+    transactions.through(through).sum('value_in_cents') / 100.0
   end
 
-  def balance_by_day(from, through)
-
+  def balance_by_date(range = {})
+    balances = Hash.new
+    transaction_dates(range).each do |date|
+      balances[date] = projected_balance(date)
+    end
+    balances
   end
 
-  def transaction_dates
-    transactions.order(:date).pluck(:date).uniq
+  def transaction_dates(range = {})
+    range[:from] ||= transactions.first.date
+    range[:to] ||= transactions.last.date
+    transactions.between(range[:from], range[:to]).pluck(:date).uniq
   end
 end

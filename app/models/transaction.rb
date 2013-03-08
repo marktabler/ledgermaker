@@ -4,12 +4,17 @@ class Transaction < ActiveRecord::Base
   validates :date, presence: true
   belongs_to :ledger
 
+  default_scope order('date ASC')
+
   # Yes, this is correct. When a company offers to "credit" your account,
   # they're talking about the transaction from their perspective, not yours.
   scope :debit, where("value_in_cents >= 0")
   scope :credit, where("value_in_cents < 0")
   
+
+  scope :between, lambda {|from, to| where("date >= ? AND date <= ?", from, to)}
   scope :before, lambda { |target_date| where("date < ?", target_date) }
+  scope :through, lambda { |target_date| where("date <= ?", target_date) }
   scope :on_or_after, lambda { |target_date| where("date >= ?", target_date) }
 
   def self.current
