@@ -70,4 +70,12 @@ describe Ledger do
     @ledger.balance_by_date[dates.first].should == @ledger.projected_balance(dates.first)
     @ledger.balance_by_date[dates.last].should == @ledger.projected_balance(dates.last)
   end
+
+  it "can update a subscription in batch" do
+    projected_transactions.first.recur(:month, 5)
+    stable_value = projected_transactions.last.value
+    @ledger.update_subscription(projected_transactions.first, value: 887.50)
+    Transaction.where(title: projected_transactions.first.title).pluck(:value_in_cents).uniq.should == [88750]
+    projected_transactions.last.value.should == stable_value
+  end
 end

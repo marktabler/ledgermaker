@@ -6,12 +6,18 @@ class Ledger < ActiveRecord::Base
     transactions.current.sum('value_in_cents') / 100.0
   end
 
-  def last_transaction
-    transactions.order(:date).last
+  def subscription_for(transaction)
+    transactions.where(title: transaction.title)
+  end
+
+  def update_subscription(transaction, attrs)
+    subscription_for(transaction).each do |t|
+      t.update_attributes(attrs)
+    end
   end
 
   def projected_balance(through = nil)
-    through ||= last_transaction.date
+    through ||= transactions.last.date
     transactions.through(through).sum('value_in_cents') / 100.0
   end
 
