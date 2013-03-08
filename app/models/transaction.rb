@@ -1,6 +1,5 @@
 class Transaction < ActiveRecord::Base
   attr_accessible :date, :title, :value, :ledger_id, :value_in_cents
-  # Validate the uniqueness of a title within a ledger id, not case sensitive
   validates :date, presence: true
   belongs_to :ledger
 

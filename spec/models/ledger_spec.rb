@@ -63,4 +63,11 @@ describe Ledger do
         "June 26, 2012", "June 27, 2012"].map { |d| Date.parse(d) } 
     @ledger.transaction_dates.should == expected_dates
   end
+
+  it "calculates its balance by date" do
+    dates = (current_transactions + projected_transactions).map(&:date)
+    @ledger.balance_by_date.keys.should == dates.uniq
+    @ledger.balance_by_date[dates.first].should == @ledger.projected_balance(dates.first)
+    @ledger.balance_by_date[dates.last].should == @ledger.projected_balance(dates.last)
+  end
 end
