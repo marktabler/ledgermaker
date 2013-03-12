@@ -29,9 +29,10 @@ class Transaction < ActiveRecord::Base
 
   def self.create_and_recur(params)
     transaction = self.create!(params)
+    transaction.save
     if transaction.recurrence_period
       transaction.recur(transaction.recurrence_period, 
-                        transaction.number_of_recurrences)
+                        transaction.number_of_recurrences.to_i)
     end    
   end
 
@@ -44,7 +45,7 @@ class Transaction < ActiveRecord::Base
   end
 
   def value
-    (value_in_cents / 100.0).round(2)
+    ((value_in_cents || 0 ) / 100.0).round(2)
   end
 
   def value=(amount)
@@ -93,7 +94,7 @@ class Transaction < ActiveRecord::Base
   end
 
   def calculated_recurrence_date(period)
-    case period
+    case period.to_sym
     when :month
       date + 1.month
     when :week
