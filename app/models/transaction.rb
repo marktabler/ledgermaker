@@ -78,11 +78,11 @@ class Transaction < ActiveRecord::Base
       ledger_id: ledger_id, 
       title: title, 
       value_in_cents: value_in_cents, 
-      date: calculated_date(period)
+      date: calculated_recurrence_date(period)
     )
   end
 
-  def calculated_date(period)
+  def calculated_recurrence_date(period)
     case period
     when :month
       date + 1.month

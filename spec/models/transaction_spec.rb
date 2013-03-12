@@ -11,7 +11,7 @@ describe Transaction do
   end
 
   let(:transaction) do
-    @transaction ||= Fabricate(:transaction)
+    Fabricate(:transaction)
   end
 
   it "has a working factory" do

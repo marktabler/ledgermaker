@@ -1,4 +1,7 @@
 Ledgermaker::Application.routes.draw do
+  resources :users
+
+
   resources :transactions
 
 
