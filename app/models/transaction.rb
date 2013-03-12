@@ -1,8 +1,8 @@
 class Transaction < ActiveRecord::Base
-  
-  BASE_FIELDS = [:date, :title, :value, :ledger_id]
 
   attr_accessible :date, :title, :value, :ledger_id, :value_in_cents
+  attr_accessor :recurrence_period, :number_of_recurrences
+  attr_accessible :recurrence_period, :number_of_recurrences
   validates :date, presence: true
   belongs_to :ledger
 
@@ -28,9 +28,10 @@ class Transaction < ActiveRecord::Base
   end
 
   def self.create_and_recur(params)
-    transaction = self.create!(params.select{|k, v| BASE_FIELDS.include?(k)})
-    if period = params[:recurrence_period]
-      transaction.recur(period, params[:number_of_recurrences])
+    transaction = self.create!(params)
+    if transaction.recurrence_period
+      transaction.recur(transaction.recurrence_period, 
+                        transaction.number_of_recurrences)
     end    
   end
 
