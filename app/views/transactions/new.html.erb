@@ -1,0 +1,17 @@
+<%= form_for [@ledger, @transaction] do |f| %>
+  <%= f.label :title %><br>
+  <%= f.text_field :title %><br>
+  <%= f.label :value %><br>
+  <%= f.text_field :value %><br>
+  <%= f.label :date %><br>
+  <%= f.text_field :date %><br>
+  <%= f.label :recurrence_period %><br>
+  <%= f.radio_button :recurrence_period, :month %><%= f.label :recurrence_period, "Monthly", value: :month %><br>
+  <%= f.radio_button :recurrence_period, :week %><%= f.label :recurrence_period, "Weekly", value: :week %><br>
+  <%= f.radio_button :recurrence_period, :biweek %><%= f.label :recurrence_period, "Bi-Weekly", value: :biweek %><br>
+  <%= f.radio_button :recurrence_period, :no_recurrence %><%= f.label :recurrence_period, "None", value: :no_recurrence %><br>
+  <%= f.label :number_of_recurrences %><br>
+  <%= f.text_field :number_of_recurrences %><br>
+  <%= f.submit %>
+
+<% end %>
