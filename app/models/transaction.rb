@@ -49,7 +49,7 @@ class Transaction < ActiveRecord::Base
   end
 
   def value=(amount)
-    update_attributes(value_in_cents: (amount * 100).to_i)
+    update_attributes(value_in_cents: (amount.to_f * 100).to_i)
   end
   
   def recur(period, number_of_periods)
