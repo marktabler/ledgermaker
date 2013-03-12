@@ -1,4 +1,7 @@
 class Transaction < ActiveRecord::Base
+  
+  BASE_FIELDS = [:date, :title, :value, :ledger_id]
+
   attr_accessible :date, :title, :value, :ledger_id, :value_in_cents
   validates :date, presence: true
   belongs_to :ledger
@@ -24,6 +27,13 @@ class Transaction < ActiveRecord::Base
     on_or_after(Date.today)
   end
 
+  def self.create_and_recur(params)
+    transaction = self.create!(params.select{|k, v| BASE_FIELDS.include?(k)})
+    if period = params[:recurrence_period]
+      transaction.recur(period, params[:number_of_recurrences])
+    end    
+  end
+
   def credit?
     value_in_cents < 0
   end
@@ -39,7 +49,6 @@ class Transaction < ActiveRecord::Base
   def value=(amount)
     update_attributes(value_in_cents: (amount * 100).to_i)
   end
-
   
   def recur(period, number_of_periods)
     transaction = self

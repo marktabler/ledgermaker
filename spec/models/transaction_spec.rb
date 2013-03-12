@@ -88,4 +88,12 @@ describe Transaction do
     transaction.debit?.should be_true
     Transaction.debit.count.should == 1
   end
+
+  it "can create and recur a Transaction in a single method call" do
+    Transaction.create_and_recur(title: "Updog", titletitle: "Ignore", 
+      value: 123, ledger_id: 2, recurrence_period: :month, 
+      number_of_recurrences: 2, date: Date.today + 3.days,
+      other_ignorable_field: 44)
+    Transaction.where(title: "Updog").count.should == 3
+  end
 end

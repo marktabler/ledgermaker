@@ -2,10 +2,12 @@ Ledgermaker::Application.routes.draw do
   resources :users
 
 
-  resources :transactions
+  
 
 
-  resources :ledgers
+  resources :ledgers do
+    resources :transactions
+  end
 
   root :to => 'static#welcome'
 
