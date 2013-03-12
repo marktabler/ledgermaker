@@ -1,0 +1,18 @@
+<h2><%= @ledger.title %></h2>
+<br>
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Amount</th>
+    <th>Date</th>
+    <th>Balance</th>
+  </tr>
+  <% @ledger.transactions.each do |transaction| %>
+    <tr>
+      <td><%= transaction.title %></td>
+      <td><%= transaction.value %></td>
+      <td><%= transaction.date %></td>
+      <td><%= @ledger.projected_balance(transaction.date) %></td>
+    </tr>
+  <% end %>
+</table>

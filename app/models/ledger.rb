@@ -1,5 +1,5 @@
 class Ledger < ActiveRecord::Base
-  attr_accessible :title
+  attr_accessible :title, :user_id
   has_many :transactions
   belongs_to :user
   validates :user_id, presence: true

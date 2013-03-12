@@ -1,0 +1,5 @@
+<ul>
+  <% @ledgers.each do |ledger| %>
+    <li><%= link_to ledger.title, ledger_path(ledger) %></li>
+  <% end %>
+</ul>
